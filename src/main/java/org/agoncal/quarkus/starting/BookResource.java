@@ -1,10 +1,12 @@
 package org.agoncal.quarkus.starting;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,19 +15,25 @@ import java.util.Optional;
 @Produces(MediaType.APPLICATION_JSON)
 public class BookResource {
 
+
+    @Inject
+    BookRepository repository;
+
+    @Inject
+    Logger logger;
+
     @GET
     public List<Book> getAllBooks() {
-        return List.of(new Book(1, "New home", "Pablo Endara", 2022, "Comedy"),
-                new Book(2, "Booklyn", "Pablo Endara", 2019, "Sci-fi"),
-                new Book(3, "Monkey mind", "Pablo Endara", 2010, "Rom-Com"),
-                new Book(4, "Battle Scars", "Pablo Endara", 2005, "Comedy"));
+        logger.info("Returning all books from collection");
+        return repository.getAllBooks();
     }
 
 
     @GET
     @Path("{id}")
     public Optional<Book> getBookById(@PathParam("id") int id) {
-        return getAllBooks().stream().filter(book -> book.id == id).findFirst();
+        logger.info("Fetching book with id:" + id);
+        return repository.getBookById(id);
     }
 
 
@@ -33,6 +41,7 @@ public class BookResource {
     @Path("/count")
     @Produces(MediaType.TEXT_PLAIN)
     public int getBookCount(){
-        return getAllBooks().size();
+        logger.info("Return count from all books within collection");
+        return repository.getBookCount();
     }
 }
